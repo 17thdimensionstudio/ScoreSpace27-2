@@ -11,12 +11,16 @@ public class GunScript : MonoBehaviour
     [SerializeField] float knockBack;
     [SerializeField] Rigidbody2D playerRB;
     [SerializeField] Transform gunPivot;
+    [SerializeField] GameObject bullet;
+    [SerializeField] Transform bulletSpawnLocation;
 
+    private AudioSource reloadSound;
     private int clock;
     private int shotsLeft;
     // Start is called before the first frame update
     void Start()
     {
+        reloadSound = gameObject.GetComponent<AudioSource>();
         clock = 0;
         shotsLeft = shotsPerMag;
     }
@@ -39,6 +43,8 @@ public class GunScript : MonoBehaviour
                 else
                 {
                     clock = reloadTime;
+                    shotsLeft = shotsPerMag;
+                    reloadSound.Play();
                 }
             }
         }
@@ -46,7 +52,9 @@ public class GunScript : MonoBehaviour
 
     private void Shoot()
     {
-        playerRB.AddForce(-new Vector2(Mathf.Cos(gunPivot.eulerAngles.z * Mathf.Deg2Rad), Mathf.Sin(gunPivot.eulerAngles.z * Mathf.Deg2Rad)).normalized * knockBack);
+        Instantiate(bullet, bulletSpawnLocation.position, gunPivot.rotation);
+        playerRB.AddForce(-new Vector2(Mathf.Cos(gunPivot.eulerAngles.z * Mathf.Deg2Rad), Mathf.Sin(gunPivot.eulerAngles.z * Mathf.Deg2Rad)) * knockBack);
         clock = timeBetweenShots;
+        shotsLeft--;
     }
 }
